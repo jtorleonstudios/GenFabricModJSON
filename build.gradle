@@ -1,0 +1,72 @@
+buildscript {
+  repositories { 
+    gradlePluginPortal()
+  }
+  dependencies {
+  }
+}
+ 
+plugins {
+  id 'java'
+  id 'eclipse'
+  id 'java-gradle-plugin' 
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  	compileOnly gradleApi()
+
+ 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.6.2'	
+	implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
+  	implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
+	
+	testImplementation "org.junit.jupiter:junit-jupiter:5.8.2" 
+}
+
+gradlePlugin {
+  plugins {
+    simplePlugin {
+        id = project.pluginID
+        implementationClass = "${project.pluginID}.Main"
+    }
+  }
+}
+
+test {
+  useJUnitPlatform()
+  testLogging.showStandardStreams = true
+  testLogging.exceptionFormat = 'full'
+}
+ 
+processResources { }
+
+java { }
+
+jar {
+  from "LICENSE", "README"
+  archiveBaseName = "${project.pluginID}.gradle.plugin"
+  manifest { attributes([
+    'Implementation-Title'  : project.name,
+    'Implementation-Version': project.version
+  ])} 
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    archiveClassifier.set('javadoc')
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set('sources')
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 16
+} 
