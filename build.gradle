@@ -10,9 +10,14 @@ plugins {
   id 'java'
   id 'eclipse'
   id 'java-gradle-plugin' 
+  id 'maven-publish'  
+  id "com.gradle.plugin-publish" version "1.0.0"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+ 
+version = project.version
+group = "com.jtorleonstudios.fabricmodjson"
 
 repositories {
     mavenCentral()
@@ -30,11 +35,19 @@ dependencies {
 
 gradlePlugin {
   plugins {
-    simplePlugin {
+    genFabricModJsonPlugin {
         id = project.pluginID
+        displayName = "GenFabricModJSON"
+        description = "Generate fabric.mod.json"
         implementationClass = "${project.pluginID}.Main"
     }
   }
+}
+
+pluginBundle {
+    website = 'https://github.com/jtorleonstudios/GenFabricModJSON' 
+    vcsUrl = 'https://github.com/jtorleonstudios/GenFabricModJSON' 
+    tags = ['fabric', 'mod', 'minecraft', 'gen']     
 }
 
 test {
@@ -55,17 +68,7 @@ jar {
     'Implementation-Version': project.version
   ])} 
 }
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    archiveClassifier.set('javadoc')
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set('sources')
-}
-
+  
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
 	it.options.release = 16
