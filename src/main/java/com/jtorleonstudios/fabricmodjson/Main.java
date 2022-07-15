@@ -18,6 +18,7 @@ public class Main extends PropertyFabricModJSON implements Plugin<Project> {
 	public void apply(Project project) {
 		final Main instance = project.getExtensions().create(TASK_NAME, Main.class);
 
+		boolean enabled = true;
 		{ /* setup */
 			final File fabricModJson = new File(project.getProjectDir(), "src/main/resources/fabric.mod.json");
 			/* test create fabric.mod.json if no exist */
@@ -27,12 +28,12 @@ public class Main extends PropertyFabricModJSON implements Plugin<Project> {
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.err.println("Warning plugin " + TASK_NAME + " is not enabled because there is an error when creating fabric.mod.json");
-					return;
+					enabled = false;
 				}
 			}
 		}
 
-		{ /* setup success, attach task */
+		if (enabled) {
 			Task t = project.task(TASK_NAME);
 			t.setDescription("Generate fabric.mod.json");
 			t.setGroup(IUtils.GROUPS.GEN);
